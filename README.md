@@ -87,7 +87,9 @@ public class SwaggerConfiguration {
 | @ApiOperation      | 描述接口方法                                                 |
 | @ApiModel          | 描述实体类对象                                               |
 | @ApiModelProperty  | 描述实体类对象属性                                           |
-| @ApiImplicitParams | 描述接口参数                                                 |
+| @ApiImplicitParams | 多个@ApiImplicitParam                                        |
+| @ApiImplicitParam  | 描述接口参数，用于方法名上                                   |
+| @ApiParam          | 描述接口参数，用于方法参数上                                 |
 | @ApiResponses      | 描述接口响应（@ApiResponse(code = 200,message = "响应成功")） |
 | @ApiIgnore         | 忽略接口方法（页面不再显示该接口的说明）                     |
 
@@ -133,11 +135,16 @@ public class UserController {
     @ApiOperation(value = "添加用户", notes = "返回：新增用户的id")
     @PostMapping(value = "/user/save")
     public Long saveUser(@RequestBody User user) {
+        System.out.println(user);
         return user.getId();
     }
 
     @ApiOperation(value = "根据用户id删除用户")
     @ApiResponse(code = 200, message = "响应成功")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String", paramType = "query")
+    })
     @DeleteMapping("/user/delete")
     public void deleteUser(
             @ApiParam(value = "用户id", required = true, example = "1")
@@ -152,3 +159,62 @@ public class UserController {
 }
 ```
 
+# 6、自定义swagger配置，并注入配置实体类中
+
+- 定义SwaggerProperties类，封装自定义swagger的相关配置
+
+  ```java
+  @Component
+  @ConfigurationProperties(prefix = "swagger")
+  @Data
+  public class SwaggerProperties {
+      private String host;
+      private String port;
+      private boolean enabled;
+  }
+  ```
+
+- 使用自定义配置类
+
+  ```java
+  @Configuration
+  @EnableOpenApi
+  public class SwaggerConfiguration {
+      private final SwaggerProperties swaggerProperties;
+  
+      public SwaggerConfiguration(SwaggerProperties swaggerProperties) {
+          this.swaggerProperties = swaggerProperties;
+      }
+  
+      @Bean
+      public Docket docket() {
+          return new Docket(DocumentationType.OAS_30)
+              // enable：是否开启swagger
+              .enable(swaggerProperties.isEnabled())
+              // apiInfo：配置apiInfo
+              .apiInfo(apiInfo())
+              // host：接口的调试地址
+              .host(swaggerProperties.getHost()+swaggerProperties.getPort())
+              // select：过滤接口
+              .select().apis(RequestHandlerSelectors.basePackage("com.zds.controller")).paths(PathSelectors.any()).build();
+      }
+  
+      /**
+       * 配置swagger api相关信息，对应页面最上面swagger信息展示区域
+       * 推荐使用ApiInfoBuilder().build()方法创建ApiInfo实例，可以避免使用构造方法指定所有的属性
+       *
+       * @return apiInfo
+       */
+      private ApiInfo apiInfo() {
+          Contact contact = new Contact("zhongdongsheng", "", "zhongds01@163.com");
+          Contact defaultContact = new Contact("", "", "");
+          // 默认的ApiInfo实例
+          ApiInfo defaultApiInfo = new ApiInfo("Api Documentation", "Api Documentation", "1.0", "urn:tos", defaultContact, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", new ArrayList());
+          // 通过ApiInfoBuilder创建ApiInfo实例
+          ApiInfo apiInfoBuilder = new ApiInfoBuilder().title("swagger-core").description("swagger-core project description").contact(contact).build();
+          // 通过ApiInfo的构造方法构造ApiInfo实例。
+          ApiInfo apiInfo = new ApiInfo("swagger-core", "swagger-core project description", "1.0", "urn:tos", contact, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", new ArrayList());
+          return apiInfoBuilder;
+      }
+  }
+  ```
