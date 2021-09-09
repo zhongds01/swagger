@@ -1,6 +1,5 @@
 package com.zds.controller;
 
-import com.sun.org.glassfish.external.statistics.annotations.Reset;
 import com.zds.entity.User;
 import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
@@ -38,11 +37,16 @@ public class UserController {
     @ApiOperation(value = "添加用户", notes = "返回：新增用户的id")
     @PostMapping(value = "/user/save")
     public Long saveUser(@RequestBody User user) {
+        System.out.println(user);
         return user.getId();
     }
 
     @ApiOperation(value = "根据用户id删除用户")
     @ApiResponse(code = 200, message = "响应成功")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String", paramType = "query")
+    })
     @DeleteMapping("/user/delete")
     public void deleteUser(
             @ApiParam(value = "用户id", required = true, example = "1")

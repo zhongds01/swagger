@@ -3,3 +3,9 @@ spring:
     name: swagger-core
 server:
   port: 8080
+
+# 自定义swagger配置
+swagger:
+  host: localhost
+  port: ${server.port}
+  enabled: true

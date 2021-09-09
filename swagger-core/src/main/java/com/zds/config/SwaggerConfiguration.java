@@ -1,5 +1,6 @@
 package com.zds.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -22,15 +23,21 @@ import java.util.ArrayList;
 @Configuration
 @EnableOpenApi
 public class SwaggerConfiguration {
+    private final SwaggerProperties swaggerProperties;
+
+    public SwaggerConfiguration(SwaggerProperties swaggerProperties) {
+        this.swaggerProperties = swaggerProperties;
+    }
+
     @Bean
     public Docket docket() {
         return new Docket(DocumentationType.OAS_30)
                 // enable：是否开启swagger
-                .enable(true)
+                .enable(swaggerProperties.isEnabled())
                 // apiInfo：配置apiInfo
                 .apiInfo(apiInfo())
                 // host：接口的调试地址
-                .host("http://localhost:8080")
+                .host(swaggerProperties.getHost()+swaggerProperties.getPort())
                 // select：过滤接口
                 .select().apis(RequestHandlerSelectors.basePackage("com.zds.controller")).paths(PathSelectors.any()).build();
     }
@@ -42,7 +49,7 @@ public class SwaggerConfiguration {
      * @return apiInfo
      */
     private ApiInfo apiInfo() {
-        Contact contact = new Contact("zhongdongsheng", "", "zhongds01@163.com");
+        Contact contact = new Contact("zhongdongsheng", "https://github.com/zhongds01", "zhongds01@163.com");
         Contact defaultContact = new Contact("", "", "");
         // 默认的ApiInfo实例
         ApiInfo defaultApiInfo = new ApiInfo("Api Documentation", "Api Documentation", "1.0", "urn:tos", defaultContact, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", new ArrayList());
