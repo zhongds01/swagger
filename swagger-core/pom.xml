@@ -47,6 +47,13 @@
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <!-- 引入knife4j -->
+        <!-- 如果仅是为了使用新的swagger-ui界面，引入swagger-bootstrap-ui即可 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.6</version>
+        </dependency>
     </dependencies>
 
     <build>

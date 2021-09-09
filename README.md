@@ -218,3 +218,12 @@ public class UserController {
       }
   }
   ```
+
+# 7、swagger-bootstrap-ui
+
+- 一个swagger-ui的页面皮肤，访问地址为
+
+  [swagger-bootstrap-ui](http://localhost:8080/doc.html)
+
+  
+
