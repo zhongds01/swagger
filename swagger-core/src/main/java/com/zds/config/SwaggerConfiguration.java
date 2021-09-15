@@ -1,6 +1,8 @@
 package com.zds.config;
 
+import io.swagger.models.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
  */
 @Configuration
 @EnableOpenApi
+@EnableConfigurationProperties(value = SwaggerProperties.class)
 public class SwaggerConfiguration {
     private final SwaggerProperties swaggerProperties;
 

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
  * @author zhongdongsheng
  * @datetime 2021/9/9 23:19
  */
-@Component
 @ConfigurationProperties(prefix = "swagger")
 @Data
 public class SwaggerProperties {
